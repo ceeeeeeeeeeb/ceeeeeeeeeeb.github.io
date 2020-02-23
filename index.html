@@ -169,7 +169,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-02-23 18:50:46 / Modified: 19:17:43" itemprop="dateCreated datePublished" datetime="2020-02-23T18:50:46+08:00">2020-02-23</time>
+              <time title="Created: 2020-02-23 18:50:46 / Modified: 21:07:51" itemprop="dateCreated datePublished" datetime="2020-02-23T18:50:46+08:00">2020-02-23</time>
             </span>
 
           
@@ -195,6 +195,13 @@
 <p>默认地址是 localhost:4000</p>
 <h2 id="主题更换"><a href="#主题更换" class="headerlink" title="主题更换"></a>主题更换</h2><p><code>git clone https://github.com/theme-next/hexo-theme-next themes/next</code></p>
 <p>在网站主题配置文件_config.yml,将theme更换为next，再将themes下的主题配置文件_config.yml中将<strong>scheme</strong>更改为自己的样式。</p>
+<h2 id="github账号关联"><a href="#github账号关联" class="headerlink" title="github账号关联"></a>github账号关联</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;John Doe&quot;</span><br><span class="line">git config --global user.email johndoe@example.com</span><br></pre></td></tr></table></figure>
+<p>使用ssh-keygen生成私钥和公钥</p>
+<p><code>ssh-keygen -t rsa -C &quot;github&#39;s maill address&quot;</code></p>
+<p>登录Github，点击头像下的settings，添加ssh,新建一个new ssh key，将id_rsa.pub文件里的内容复制上去。<br>输入<br><code>ssh -T git@github.com</code>测试添加ssh是否成功。</p>
+<p>在_config.yml中更改自己的github账号配置,<strong>冒号</strong>后有空格</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">type: git</span><br><span class="line">repo: git@github.com:user&#x2F;user.github.io.git</span><br><span class="line">branch: master</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
