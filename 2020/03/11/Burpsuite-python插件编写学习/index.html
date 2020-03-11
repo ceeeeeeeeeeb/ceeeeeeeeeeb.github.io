@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="利用python编写fastjson和shiro的burpsuite检测工具">
+    <meta name="description" content="Python 编写 Burp 插件辅助工具使用 Python 编写 Burp 插件的时候会遇到各种琐碎的麻烦。最主要的原因在于，Java 与 Python 编程语言特性上的差异，如：强弱类型，数据类型等以及 Jython 本身与 CPython 的一些不同（具体请看 Jython 官网文档）。不过在熟悉了 Burp 接口和基本的编写套路后，一切都会变得很简单。 国外有牛人编写了一个 Jython">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Burpsuite python插件编写学习">
 <meta property="og:url" content="http://yoursite.com/2020/03/11/Burpsuite-python%E6%8F%92%E4%BB%B6%E7%BC%96%E5%86%99%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="ceeeeeeb&#39;s blog">
-<meta property="og:description" content="利用python编写fastjson和shiro的burpsuite检测工具">
+<meta property="og:description" content="Python 编写 Burp 插件辅助工具使用 Python 编写 Burp 插件的时候会遇到各种琐碎的麻烦。最主要的原因在于，Java 与 Python 编程语言特性上的差异，如：强弱类型，数据类型等以及 Jython 本身与 CPython 的一些不同（具体请看 Jython 官网文档）。不过在熟悉了 Burp 接口和基本的编写套路后，一切都会变得很简单。 国外有牛人编写了一个 Jython">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-03-10T18:41:00.000Z">
-<meta property="article:modified_time" content="2020-03-10T19:36:15.987Z">
+<meta property="article:modified_time" content="2020-03-11T19:02:04.444Z">
 <meta property="article:author" content="ceeeeeeb">
 <meta name="twitter:card" content="summary">
     
@@ -50,7 +50,7 @@
     <!-- rss -->
     
     
-<meta name="generator" content="Hexo 4.2.0"></head>
+</head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -64,11 +64,7 @@
          
           <li><a href="/">Home</a></li>
          
-          <li><a href="/about/">About</a></li>
-         
           <li><a href="/archives/">Writing</a></li>
-         
-          <li><a href="/projects_url">Projects</a></li>
         
       </ul>
     </span>
@@ -105,7 +101,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-编写-Burp-插件辅助工具"><span class="toc-number">1.</span> <span class="toc-text">Python 编写 Burp 插件辅助工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">0x01 基础知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-插件中用到的方法"><span class="toc-number">1.2.</span> <span class="toc-text">0x02 插件中用到的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-重要代码块"><span class="toc-number">1.3.</span> <span class="toc-text">0x03 重要代码块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-参考"><span class="toc-number">1.4.</span> <span class="toc-text">0x04 参考</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python-编写-Burp-插件辅助工具"><span class="toc-number">1.</span> <span class="toc-text">Python 编写 Burp 插件辅助工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">0x01 基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-插件中用到的方法"><span class="toc-number">1.2.</span> <span class="toc-text">0x02 插件中用到的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-重要代码块"><span class="toc-number">1.3.</span> <span class="toc-text">0x03 重要代码块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-参考"><span class="toc-number">1.4.</span> <span class="toc-text">0x04 参考</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -144,15 +140,15 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h2 id="Python-编写-Burp-插件辅助工具"><a href="#Python-编写-Burp-插件辅助工具" class="headerlink" title="Python 编写 Burp 插件辅助工具"></a>Python 编写 Burp 插件辅助工具</h2><p>使用 Python 编写 Burp 插件的时候会遇到各种琐碎的麻烦。最主要的原因在于，Java 与 Python 编程语言特性上的差异，如：强弱类型，数据类型等以及 Jython 本身与 CPython 的一些不同（具体请看 Jython 官网文档）。不过在熟悉了 Burp 接口和基本的编写套路后，一切都会变得很简单。</p>
+    <h1 id="Python-编写-Burp-插件辅助工具"><a href="#Python-编写-Burp-插件辅助工具" class="headerlink" title="Python 编写 Burp 插件辅助工具"></a>Python 编写 Burp 插件辅助工具</h1><p>使用 Python 编写 Burp 插件的时候会遇到各种琐碎的麻烦。最主要的原因在于，Java 与 Python 编程语言特性上的差异，如：强弱类型，数据类型等以及 Jython 本身与 CPython 的一些不同（具体请看 Jython 官网文档）。不过在熟悉了 Burp 接口和基本的编写套路后，一切都会变得很简单。</p>
 <p>国外有牛人编写了一个 Jython Burp API，封装了一些功能，可以很方便的获取 Burp 数据并且可以调试 Jython 代码。具体使用说明请看 Git 文档。</p>
-<h3 id="0x01-基础知识"><a href="#0x01-基础知识" class="headerlink" title="0x01 基础知识"></a>0x01 基础知识</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#!python</span><br><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># 导入 burp 接口</span><br><span class="line">from burp import IBurpExtender, IProxyListener</span><br><span class="line"># 导入 Java 库</span><br><span class="line">from java.net import URL</span><br><span class="line"># 按照 Python 类继承的方式实现相关接口</span><br><span class="line">class BurpExtender(IBurpExtender, IProxyListener):</span><br><span class="line">    def registerExtenderCallbacks(self, callbacks):</span><br><span class="line">        # code here</span><br><span class="line">        pass</span><br><span class="line">    def processProxyMessage(self, messageIsRequest, message):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<h2 id="0x01-基础知识"><a href="#0x01-基础知识" class="headerlink" title="0x01 基础知识"></a>0x01 基础知识</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#!python</span><br><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># 导入 burp 接口</span><br><span class="line">from burp import IBurpExtender, IProxyListener</span><br><span class="line"># 导入 Java 库</span><br><span class="line">from java.net import URL</span><br><span class="line"># 按照 Python 类继承的方式实现相关接口</span><br><span class="line">class BurpExtender(IBurpExtender, IProxyListener):</span><br><span class="line">    def registerExtenderCallbacks(self, callbacks):</span><br><span class="line">        # code here</span><br><span class="line">        pass</span><br><span class="line">    def processProxyMessage(self, messageIsRequest, message):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
 
-<h3 id="0x02-插件中用到的方法"><a href="#0x02-插件中用到的方法" class="headerlink" title="0x02 插件中用到的方法"></a>0x02 插件中用到的方法</h3><p>2.1 IBurpExtender<br>所有插件都必须实现这个接口。当我们在加载插件时，默认会调用IBurpExtender类下的registerExtenderCallbacks方法，并传递一个IBurpExtenderCallbacks对象，此对象在编写插件时会经常用到。</p>
+<h2 id="0x02-插件中用到的方法"><a href="#0x02-插件中用到的方法" class="headerlink" title="0x02 插件中用到的方法"></a>0x02 插件中用到的方法</h2><p>2.1 IBurpExtender<br>所有插件都必须实现这个接口。当我们在加载插件时，默认会调用IBurpExtender类下的registerExtenderCallbacks方法，并传递一个IBurpExtenderCallbacks对象，此对象在编写插件时会经常用到。</p>
 <p>2.2 IHttpListener<br>该类是用来注册HTTP监听器，然后对获取到的请求或响应包进行处理，有个processHttpMessage的方法用于对请求和响应的数据包进行自定义操作，该方法在发送请求之前和接收响应之后会被调用。</p>
 <p>2.3 registerExtenderCallbacks<br>当我们在加载插件时，默认会调用IBurpExtender类下的registerExtenderCallbacks方法，并传递一个IBurpExtenderCallbacks对象，提供可由扩展调用的方法以执行各种操作。</p>
 <p>2.4 processHttpMessage<br>这是IHttpListener接口中唯一一个需要实现的方法，当通过IBurpExtenderCallbacks.registerHttpListener()注册了HTTP监听器后，所有的流量都会先传入processHttpMessage方法中进行处理。</p>
-<h3 id="0x03-重要代码块"><a href="#0x03-重要代码块" class="headerlink" title="0x03 重要代码块"></a>0x03 重要代码块</h3><ul>
+<h2 id="0x03-重要代码块"><a href="#0x03-重要代码块" class="headerlink" title="0x03 重要代码块"></a>0x03 重要代码块</h2><ul>
 <li><p>获取request,response请求并利用<a href="https://portswigger.net/burp/extender/api/burp/IExtensionHelpers.html#analyzeRequest(byte[])" target="_blank" rel="noopener">analyzeRequest</a>和<a href="https://portswigger.net/burp/extender/api/burp/IExtensionHelpers.html#analyzeResponse" target="_blank" rel="noopener">analyzeResponse</a>解析成<a href="https://portswigger.net/burp/extender/api/burp/IRequestInfo.html" target="_blank" rel="noopener">IRequestInfo</a>和<a href="https://portswigger.net/burp/extender/api/burp/IResponseInfo.html" target="_blank" rel="noopener">IResponseInfo</a></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_request_info</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        analyzedIRequestInfo = self._helpers.analyzeRequest(request)</span><br><span class="line">        reqHeaders = analyzedIRequestInfo.getHeaders()</span><br><span class="line">        reqBodys = request[analyzedIRequestInfo.getBodyOffset():].tostring()</span><br><span class="line">        reqMethod = analyzedIRequestInfo.getMethod()</span><br><span class="line">        reqParameters = analyzedIRequestInfo.getParameters()</span><br><span class="line">        reqHost, reqPath = self.get_request_host(reqHeaders)</span><br><span class="line">        reqContentType = analyzedIRequestInfo.getContentType()</span><br><span class="line">        <span class="keyword">return</span> analyzedIRequestInfo, reqHeaders, reqBodys, reqMethod, reqParameters, reqHost, reqContentType</span><br><span class="line">        </span><br><span class="line">response = messageInfo.getResponse()</span><br><span class="line">                analyzedResponse = self._helpers.analyzeResponse(response)  </span><br><span class="line">                response_headers = analyzedResponse.getHeaders()</span><br><span class="line">                response_bodys = response[analyzedResponse.getBodyOffset():].tostring()</span><br><span class="line">                response_statusCode = analyzedResponse.getStatusCode()</span><br></pre></td></tr></table></figure>
 </li>
@@ -166,7 +162,7 @@
 <li><p>fastjson反序列化payload发送及ceye.io平台获取结果</p>
 </li>
 </ul>
-<h3 id="0x04-参考"><a href="#0x04-参考" class="headerlink" title="0x04 参考"></a>0x04 参考</h3><p><a href="https://portswigger.net/burp/extender/api/constant-values.html#burp.IRequestInfo.CONTENT_TYPE_JSON" target="_blank" rel="noopener">https://portswigger.net/burp/extender/api/constant-values.html#burp.IRequestInfo.CONTENT_TYPE_JSON</a></p>
+<h2 id="0x04-参考"><a href="#0x04-参考" class="headerlink" title="0x04 参考"></a>0x04 参考</h2><p><a href="https://portswigger.net/burp/extender/api/constant-values.html#burp.IRequestInfo.CONTENT_TYPE_JSON" target="_blank" rel="noopener">https://portswigger.net/burp/extender/api/constant-values.html#burp.IRequestInfo.CONTENT_TYPE_JSON</a></p>
 <p><a href="https://www.w2n1ck.com/article/44/" target="_blank" rel="noopener">https://www.w2n1ck.com/article/44/</a></p>
 <p><a href="https://github.com/uknowsec/BurpSuite-Extender-fastjson" target="_blank" rel="noopener">https://github.com/uknowsec/BurpSuite-Extender-fastjson</a></p>
 
@@ -184,17 +180,13 @@
          
           <li><a href="/">Home</a></li>
          
-          <li><a href="/about/">About</a></li>
-         
           <li><a href="/archives/">Writing</a></li>
-         
-          <li><a href="/projects_url">Projects</a></li>
         
       </ul>
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-编写-Burp-插件辅助工具"><span class="toc-number">1.</span> <span class="toc-text">Python 编写 Burp 插件辅助工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">0x01 基础知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-插件中用到的方法"><span class="toc-number">1.2.</span> <span class="toc-text">0x02 插件中用到的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-重要代码块"><span class="toc-number">1.3.</span> <span class="toc-text">0x03 重要代码块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-参考"><span class="toc-number">1.4.</span> <span class="toc-text">0x04 参考</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python-编写-Burp-插件辅助工具"><span class="toc-number">1.</span> <span class="toc-text">Python 编写 Burp 插件辅助工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">0x01 基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-插件中用到的方法"><span class="toc-number">1.2.</span> <span class="toc-text">0x02 插件中用到的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-重要代码块"><span class="toc-number">1.3.</span> <span class="toc-text">0x03 重要代码块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-参考"><span class="toc-number">1.4.</span> <span class="toc-text">0x04 参考</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -235,11 +227,7 @@
          
           <li><a href="/">Home</a></li>
          
-          <li><a href="/about/">About</a></li>
-         
           <li><a href="/archives/">Writing</a></li>
-         
-          <li><a href="/projects_url">Projects</a></li>
         
       </ul>
     </nav>
